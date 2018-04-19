@@ -1,0 +1,85 @@
+1.父组件给子组件传递数据
+
+vue中使用props向子组件传递数据
+
+① 子组件在props中创建一个属性,用于接收父组件传过来的值 
+
+props:['Number']
+
+②父组件中注册子组件
+
+import homeheader from './publicCom/header.vue';
+
+③在子组件标签中添加子组件props中创建的属性
+
+<homeheader :Number = "Id"></homeheader>
+
+④把需要传给子组件的值赋给该属性
+
+此时的id为父组件中data下边的id值
+
+
+2.子组件向父组件传递数据
+
+子组件主要通过事件传递数据给父组件 $emit
+
+①子组件中需要以某种方式,例如点击事件的方法来触发一个自定义事件  或者直接在生命周期中 this.$emit("name"， data);
+
+this.$emit("getNum", this.SId);
+
+
+②将需要传的值作为$emit的第二个参数,该值将作为实参数传给相应自定义事件的方法
+
+
+③在父组件中注册子组件并在子组件标签上绑定自定义事件的监听
+
+<homeheader @getNum="Son"></homeheader>
+
+Son(data) {
+	//接收数据
+	this.SonId = data;
+	console.log(data)
+}
+
+
+3.子组件向子组件传递数据
+
+vue找那个没有直接子组件对子组件传参的方法,建议将需要传递数据的在组件,都合并为一个组件,如果一定需要子组件对子组件传参,可以先传到父组件,再传到子组件,为了方便开发,vue推出了一个状态管理工具vuex,可以啃方便的实现组件之间的参数传递
+
+①在store.js中  [ var store = new Vuex.Store（）] 引入vue，vuex
+
+import Vue from 'vue';
+import Vuex from 'vuex';
+Vue.use(Vuex)
+
+② 在vuex操作中可以分为五步，其中前四步是可以在store.js中编辑的
+
+ 1）应用初始状态
+ const state = {
+	logined: "",
+ 	loginedUser: {}
+ }
+ 
+ 2）获取信息
+
+ const getters = {
+ 	getLogined(state) {
+ 		return state.logined
+ 	}
+ }
+
+ 3) 定义所需的mutations  修改操作
+ 
+ setLogined（state, data） {
+ 	state.logined = data;
+ }
+
+ 4) 包含多个mutations的修改 驱动
+ const actions = {
+ 	login（context，data） {
+		context.commit(‘setLogined’, true);
+ 	}
+ }
+ 5)触发action驱动修改 dispatch
+
+ this.$store.dispatch(‘login’)
